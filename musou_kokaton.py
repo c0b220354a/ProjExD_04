@@ -263,6 +263,27 @@ class Gravity(pg.sprite.Sprite):
         self.life += 1
         return
 
+class Shield(pg.sprite.Sprite):
+    def __init__(self,bird:Bird,life:int):
+        super().__init__()
+        self.width = 20
+        self.height = bird.rect.height * 2
+        self.image = pg.Surface((self.width, self.height),pg.SRCALPHA)
+        pg.draw.rect(self.image, (0, 0, 255), (0, 0, self.width, self.height))
+        self.vx, self.vy = bird.dire
+        angle = math.degrees(math.atan2(-self.vy, self.vx))
+        self.image = pg.transform.rotate(self.image, angle)
+        self.rect = self.image.get_rect()
+        #offset = bird.rect.width // 2
+        self.rect.centerx = bird.rect.centerx + self.vx * bird.rect.width       
+        self.rect.centery = bird.rect.centery + self.vy * bird.rect.height
+        self.life = life
+
+    def update(self):
+        self.life -= 1
+        if self.life<0:
+            self.kill()
+        
 
 def main():
     pg.display.set_caption("真！こうかとん無双")
@@ -276,6 +297,7 @@ def main():
     exps = pg.sprite.Group()
     emys = pg.sprite.Group()
     gravitys = pg.sprite.Group()
+    shis = pg.sprite.Group()
 
     tmr = 0
     clock = pg.time.Clock()
@@ -293,7 +315,14 @@ def main():
 
         if  len(gravitys) == 0:
             screen.blit(bg_img, [0, 0])
+            if event.type == pg.KEYDOWN and event.key == pg.K_CAPSLOCK:
+                if score.value>50 and len(shis)==0:
+                    shis.add(Shield(bird,400))
+                    score.value-=50
+        
+        screen.blit(bg_img, [0, 0])
 
+         
         if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる
             emys.add(Enemy())
 
@@ -302,6 +331,7 @@ def main():
                 # 敵機が停止状態に入ったら，intervalに応じて爆弾投下
                 bombs.add(Bomb(emy, bird))
 
+        
         for emy in pg.sprite.groupcollide(emys, beams, True, True).keys():
             exps.add(Explosion(emy, 100))  # 爆発エフェクト
             score.value += 10  # 10点アップ
@@ -310,6 +340,9 @@ def main():
         for bomb in pg.sprite.groupcollide(bombs, beams, True, True).keys():
             exps.add(Explosion(bomb, 50))  # 爆発エフェクト
             score.value += 1  # 1点アップ
+        
+        for bomb in pg.sprite.groupcollide(shis,bombs,True,True).keys():
+            exps.add(Explosion(bomb,50))
 
         for emy in pg.sprite.groupcollide(emys, gravitys, True, False).keys():
             exps.add(Explosion(emy, 100))  # 爆発エフェクト
@@ -337,6 +370,8 @@ def main():
         exps.draw(screen)
         gravitys.update()
         gravitys.draw(screen)
+        shis.update()
+        shis.draw(screen)
         score.update(screen)
         pg.display.update()
         tmr += 1

@@ -244,9 +244,6 @@ class Score:
         screen.blit(self.image, self.rect)
 
 
-
-
-
 class Shield(pg.sprite.Sprite):
     def __init__(self,bird:Bird,life:int):
         super().__init__()

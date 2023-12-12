@@ -250,7 +250,7 @@ class Score:
     def __init__(self):
         self.font = pg.font.Font(None, 50)
         self.color = (0, 0, 255)
-        self.value = 0
+        self.value = 1000
         self.image = self.font.render(f"Score: {self.value}", 0, self.color)
         self.rect = self.image.get_rect()
         self.rect.center = 100, HEIGHT-50
@@ -408,6 +408,17 @@ def main():
            # pg.display.update()
            # time.sleep(2)
            # return
+
+        for bomb in pg.sprite.spritecollide(bird, bombs, True):
+            if bird.state == "normal":
+                bird.change_img(8, screen) # こうかとん悲しみエフェクト
+                score.update(screen)
+                pg.display.update()
+                time.sleep(2)
+                return
+            if bird.state == "hyper":
+                exps.add(Explosion(bomb, 50))  # 爆発エフェクト
+                score.value += 1
         
         for bomb in pg.sprite.spritecollide(bird, bombs, True):
             if bomb.state == "inactive":
@@ -429,17 +440,7 @@ def main():
             score.value += 1  # 1点アップ
 
 
-        for bomb in pg.sprite.spritecollide(bird, bombs, True):
-            if bird.state == "normal":
-                bird.change_img(8, screen) # こうかとん悲しみエフェクト
-                score.update(screen)
-                pg.display.update()
-                time.sleep(2)
-                return
-            if bird.state == "hyper":
-                exps.add(Explosion(bomb, 50))  # 爆発エフェクト
-                score.value += 1 
-
+        
                 
        
         bird.update(key_lst, screen)

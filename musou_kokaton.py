@@ -73,6 +73,12 @@ class Bird(pg.sprite.Sprite):
         self.rect.center = xy
         self.speed = 10
 
+
+            
+            
+
+
+        
     def change_img(self, num: int, screen: pg.Surface):
         """
         こうかとん画像を切り替え，画面に転送する
@@ -159,6 +165,8 @@ class Beam(pg.sprite.Sprite):
         self.rect.centerx = bird.rect.centerx+bird.rect.width*self.vx
         self.speed = 10
 
+        
+
     def update(self):
         """
         ビームを速度ベクトルself.vx, self.vyに基づき移動させる
@@ -242,7 +250,7 @@ class Score:
     def update(self, screen: pg.Surface):
         self.image = self.font.render(f"Score: {self.value}", 0, self.color)
         screen.blit(self.image, self.rect)
-
+        
 
 class Gravity(pg.sprite.Sprite):
     """
@@ -290,7 +298,7 @@ def main():
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load(f"{MAIN_DIR}/fig/pg_bg.jpg")
     score = Score()
-
+    
     bird = Bird(3, (900, 400))
     bombs = pg.sprite.Group()
     beams = pg.sprite.Group()
@@ -298,6 +306,7 @@ def main():
     emys = pg.sprite.Group()
     gravitys = pg.sprite.Group()
     shis = pg.sprite.Group()
+
 
     tmr = 0
     clock = pg.time.Clock()
@@ -321,6 +330,13 @@ def main():
                     score.value-=50
         
         screen.blit(bg_img, [0, 0])
+        if event.type == pg.KEYDOWN and event.key == pg.K_LSHIFT:
+            bird.speed = 20
+             
+                
+        if event.type == pg.KEYUP and event.key == pg.K_LSHIFT:
+            bird.speed = 10
+                
 
          
         if tmr%200 == 0:  # 200フレームに1回，敵機を出現させる

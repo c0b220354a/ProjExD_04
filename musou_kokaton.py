@@ -107,7 +107,7 @@ class Bird(pg.sprite.Sprite):
             self.image = pg.transform.laplacian(self.image)
             self.hyper_life -= 1
         if self.hyper_life < 0:
-            self.state = "nomal"
+            self.state = "normal"
         screen.blit(self.image, self.rect)
 
 
@@ -295,19 +295,19 @@ def main():
             exps.add(Explosion(bomb, 50))  # 爆発エフェクト
             score.value += 1  # 1点アップ
 
-        if len(pg.sprite.spritecollide(bird, bombs, True)) != 0:
-            if bird.state == "hyper":
-                for bomb in pg.sprite.groupcollide(bombs, beams, True, True).keys():
-                    exps.add(Explosion(bomb, 50))  # 爆発エフェクト
-                    score.value += 1 
-
-            else:
+        for bomb in pg.sprite.spritecollide(bird, bombs, True):
+            if bird.state == "normal":
                 bird.change_img(8, screen) # こうかとん悲しみエフェクト
                 score.update(screen)
                 pg.display.update()
                 time.sleep(2)
                 return
+            if bird.state == "hyper":
+                exps.add(Explosion(bomb, 50))  # 爆発エフェクト
+                score.value += 1 
 
+                
+       
         bird.update(key_lst, screen)
         beams.update()
         beams.draw(screen)
